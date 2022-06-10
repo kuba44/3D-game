@@ -2,36 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class BossController : MonoBehaviour
 {
-    //EnemyRanges
+    //BossRanges
     [SerializeField] float shootingRange;
     [SerializeField] float playerChaseRange;
     [SerializeField] float playerDetectionRange;
     [SerializeField] float stopChaseRange;
 
-    //EnemyMovement
-    [SerializeField] float enemySpeed;
+    //BossMovement
+    [SerializeField] float bossSpeed;
     private Transform playerToChase;
-    private Rigidbody enemyRigidbody;
+    private Rigidbody bossRigidbody;
     private Vector3 directionToMove;
     private bool isChasing = false;
 
-    //EnemyShooting
+    //BoosShooting
     [SerializeField] float timeBetweenShots;
     private bool readyToShoot;
 
-    //DamageEnemy
-    [SerializeField] int enemyHealth;
+    //DamageBoss
+    [SerializeField] int bossHealth;
 
     //objects
-    [SerializeField] GameObject enemyProjectile;
+    [SerializeField] GameObject bossProjectile;
     [SerializeField] Transform firePosition;
 
 
     void Start()
     {
-        enemyRigidbody = GetComponent<Rigidbody>();
+        bossRigidbody = GetComponent<Rigidbody>();
 
         playerToChase = FindObjectOfType<PlayerController>().transform;
 
@@ -41,14 +41,14 @@ public class EnemyController : MonoBehaviour
 
     void Update()
     {
-        EnemyMovement();
+        BossMovement();
 
         LookAtPlayer();
 
-        EnemyShooting();
+        BossShooting();
     }
 
-    private void EnemyShooting()
+    private void BossShooting()
     {
         if (readyToShoot && Vector3.Distance(playerToChase.transform.position, transform.position) < shootingRange)
         {
@@ -61,17 +61,17 @@ public class EnemyController : MonoBehaviour
 
     private void LookAtPlayer()
     {
-        transform.LookAt( playerToChase );
+        transform.LookAt(playerToChase);
     }
 
-    private void EnemyMovement()
+    private void BossMovement()
     {
-        if ( Vector3.Distance( transform.position, playerToChase.position ) < playerDetectionRange )
+        if (Vector3.Distance(transform.position, playerToChase.position) < playerDetectionRange)
         {
             isChasing = true;
         }
 
-        if ( Vector3.Distance( transform.position, playerToChase.position ) < playerChaseRange && Vector3.Distance(transform.position, playerToChase.position) > stopChaseRange && isChasing )
+        if (Vector3.Distance(transform.position, playerToChase.position) < playerChaseRange && Vector3.Distance(transform.position, playerToChase.position) > stopChaseRange && isChasing)
         {
             directionToMove = playerToChase.position - transform.position;
         }
@@ -82,22 +82,22 @@ public class EnemyController : MonoBehaviour
         }
 
         directionToMove.Normalize();
-        enemyRigidbody.velocity = directionToMove * enemySpeed;
+        bossRigidbody.velocity = directionToMove * bossSpeed;
     }
 
     IEnumerator FireEnemyProjectile()
     {
         yield return new WaitForSeconds(timeBetweenShots);
 
-        Instantiate(enemyProjectile, firePosition.position, firePosition.rotation);
+        Instantiate(bossProjectile, firePosition.position, firePosition.rotation);
         readyToShoot = true;
     }
 
     public void DamageEnemy(int damageTaken)
     {
-        enemyHealth -= damageTaken;
+        bossHealth -= damageTaken;
 
-        if (enemyHealth <= 0)
+        if (bossHealth <= 0)
         {
             Destroy(gameObject);
         }
